@@ -1,20 +1,44 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import CreateTask from './components/CreateTask';
+import TaskList from './components/TaskList';
+import { TaskProvider } from './hooks/useTasks';
+import { ThemeProvider } from './hooks/useTheme';
+import { Ionicons } from '@expo/vector-icons'; // Optional: for icons in the tab
 
-export default function App() {
+const Tab = createBottomTabNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ThemeProvider>
+      <TaskProvider>
+        <NavigationContainer>
+          <Tab.Navigator
+            initialRouteName="TaskList"
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ color, size }) => {
+                let iconName;
+                if (route.name === 'CreateTask') {
+                  iconName = 'add-circle-outline'; // Icon for CreateTask
+                } else if (route.name === 'TaskList') {
+                  iconName = 'list-outline'; // Icon for TaskList
+                }
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+            })}
+            tabBarOptions={{
+              activeTintColor: 'tomato',
+              inactiveTintColor: 'gray',
+            }}
+          >
+            <Tab.Screen name="CreateTask" component={CreateTask} />
+            <Tab.Screen name="TaskList" component={TaskList} />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </TaskProvider>
+    </ThemeProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
